@@ -1,26 +1,124 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Krem hangat — background utama, bukan putih polos */
+  --background: #f5f1e8;
+  /* Abu-abu gelap kehijauan — teks body umum, bukan hitam pekat */
+  --foreground: #313832;
+
+  /* LAZSIP brand — hijau tua gelap (aksen utama: headline, tombol utama, section gelap) */
+  --color-primary-50: #eef3ef;
+  --color-primary-100: #dce7de;
+  --color-primary-200: #b9cfbe;
+  --color-primary-300: #93b49b;
+  --color-primary-400: #6f9779;
+  --color-primary-500: #4f7959;
+  --color-primary-600: #3b5f45;
+  --color-primary-700: #2b4934;
+  --color-primary-800: #1b3a2b;
+  --color-primary-900: #16301f;
+
+  /* LAZSIP brand — hijau sage (aksen sekunder: subheadline, teks pendukung) */
+  --color-secondary-50: #f3f6f3;
+  --color-secondary-100: #e3ebe3;
+  --color-secondary-200: #c9d9cb;
+  --color-secondary-300: #acc5af;
+  --color-secondary-400: #92b396;
+  --color-secondary-500: #7a9b7e;
+  --color-secondary-600: #628264;
+  --color-secondary-700: #4f6a51;
+  --color-secondary-800: #3e5340;
+  --color-secondary-900: #313f32;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-sans);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-primary-50: var(--color-primary-50);
+  --color-primary-100: var(--color-primary-100);
+  --color-primary-200: var(--color-primary-200);
+  --color-primary-300: var(--color-primary-300);
+  --color-primary-400: var(--color-primary-400);
+  --color-primary-500: var(--color-primary-500);
+  --color-primary-600: var(--color-primary-600);
+  --color-primary-700: var(--color-primary-700);
+  --color-primary-800: var(--color-primary-800);
+  --color-primary-900: var(--color-primary-900);
+
+  --color-secondary-50: var(--color-secondary-50);
+  --color-secondary-100: var(--color-secondary-100);
+  --color-secondary-200: var(--color-secondary-200);
+  --color-secondary-300: var(--color-secondary-300);
+  --color-secondary-400: var(--color-secondary-400);
+  --color-secondary-500: var(--color-secondary-500);
+  --color-secondary-600: var(--color-secondary-600);
+  --color-secondary-700: var(--color-secondary-700);
+  --color-secondary-800: var(--color-secondary-800);
+  --color-secondary-900: var(--color-secondary-900);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Skeleton loading shimmer — dipakai saat data campaign/berita/kegiatan sedang di-fetch */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-primary-50) 25%,
+    var(--color-primary-100) 50%,
+    var(--color-primary-50) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+/* Kompensasi navbar mengambang (pill, dengan margin atas) agar anchor link (#section) tidak tertutup navbar */
+section[id] {
+  scroll-margin-top: 104px;
+}
+
+/* Sembunyikan scrollbar pada baris pinned horizontal (tetap bisa digeser) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Row logo mitra yang auto-scroll terus-menerus ke kiri (bukan drag manual) — konten
+   digandakan 2x di komponennya, jadi geser -50% pas balik ke posisi identik (loop mulus). */
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee-left 48s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation-play-state: paused;
+  }
+}
+
+/* Placeholder untuk RichTextEditor admin (contentEditable div kosong) */
+.admin-rte:empty:before {
+  content: attr(data-placeholder);
+  color: var(--color-primary-300);
 }
