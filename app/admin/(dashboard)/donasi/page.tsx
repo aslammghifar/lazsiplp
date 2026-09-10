@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { campaigns as initialCampaigns } from "@/lib/dummy-data";
-import { formatRupiah } from "@/lib/format";
+import { formatRupiah, formatNumber } from "@/lib/format";
 import { useToast } from "@/components/ui/Toast";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { Toggle } from "@/components/admin/Toggle";
@@ -15,8 +15,10 @@ import { Pagination } from "@/components/admin/Pagination";
 import { EmptyState } from "@/components/admin/EmptyState";
 import { ConfirmModal } from "@/components/admin/ConfirmModal";
 import { ViewModeToggle, type ViewMode } from "@/components/admin/ViewModeToggle";
+import { AdminGridCard, stopCardClick } from "@/components/admin/AdminGridCard";
 
 type StatusFilter = "semua" | "aktif" | "selesai" | "nonaktif";
+type SortBy = "terbaru" | "donaturTerbanyak" | "danaTerkumpul";
 const PAGE_SIZE = 8;
 
 const STATUS_STYLES: Record<string, string> = {
@@ -31,6 +33,9 @@ export default function AdminDonasiPage() {
   const [items, setItems] = useState(initialCampaigns);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("semua");
+  const [kategoriFilter, setKategoriFilter] = useState("semua");
+  const [lokasiFilter, setLokasiFilter] = useState("semua");
+  const [sortBy, setSortBy] = useState<SortBy>("terbaru");
   const [view, setView] = useState<ViewMode>("list");
   const [page, setPage] = useState(1);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null);
@@ -57,13 +62,23 @@ export default function AdminDonasiPage() {
     setDeleteTarget(null);
   }
 
+  const kategoriOptions = useMemo(() => Array.from(new Set(items.map((c) => c.kategoriLabel))).sort(), [items]);
+  const lokasiOptions = useMemo(() => Array.from(new Set(items.map((c) => c.lokasi))).sort(), [items]);
+
   const filtered = useMemo(() => {
     let result = items.filter(
       (c) => c.title.toLowerCase().includes(search.toLowerCase()) || c.kodeUnik.toLowerCase().includes(search.toLowerCase())
     );
     if (statusFilter !== "semua") result = result.filter((c) => c.status === statusFilter);
+    if (kategoriFilter !== "semua") result = result.filter((c) => c.kategoriLabel === kategoriFilter);
+    if (lokasiFilter !== "semua") result = result.filter((c) => c.lokasi === lokasiFilter);
+    result = [...result].sort((a, b) => {
+      if (sortBy === "donaturTerbanyak") return b.donaturCount - a.donaturCount;
+      if (sortBy === "danaTerkumpul") return b.collected - a.collected;
+      return 0;
+    });
     return result;
-  }, [items, search, statusFilter]);
+  }, [items, search, statusFilter, kategoriFilter, lokasiFilter, sortBy]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -99,10 +114,36 @@ export default function AdminDonasiPage() {
             </button>
           ))}
         </div>
+        <select
+          value={kategoriFilter}
+          onChange={(e) => { setKategoriFilter(e.target.value); setPage(1); }}
+          className="rounded-full border border-primary-200 bg-white px-3.5 py-2 text-xs text-primary-800 outline-none focus:ring-2 focus:ring-primary-400"
+        >
+          <option value="semua">Semua Kategori</option>
+          {kategoriOptions.map((k) => <option key={k} value={k}>{k}</option>)}
+        </select>
+        <select
+          value={lokasiFilter}
+          onChange={(e) => { setLokasiFilter(e.target.value); setPage(1); }}
+          className="rounded-full border border-primary-200 bg-white px-3.5 py-2 text-xs text-primary-800 outline-none focus:ring-2 focus:ring-primary-400"
+        >
+          <option value="semua">Semua Lokasi</option>
+          {lokasiOptions.map((l) => <option key={l} value={l}>{l}</option>)}
+        </select>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as SortBy)}
+          className="rounded-full border border-primary-200 bg-white px-3.5 py-2 text-xs text-primary-800 outline-none focus:ring-2 focus:ring-primary-400"
+        >
+          <option value="terbaru">Urutkan: Terbaru</option>
+          <option value="donaturTerbanyak">Urutkan: Donatur terbanyak</option>
+          <option value="danaTerkumpul">Urutkan: Dana terkumpul</option>
+        </select>
         <div className="ml-auto">
           <ViewModeToggle mode={view} onChange={setView} />
         </div>
       </div>
+      <p className="mb-4 text-xs text-primary-800/45">Menampilkan {filtered.length} dari {items.length} campaign.</p>
 
       {paged.length === 0 ? (
         <div className="rounded-2xl border border-primary-100 bg-white">
@@ -113,33 +154,34 @@ export default function AdminDonasiPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[880px] text-left text-sm">
               <thead>
-                <tr className="border-b border-primary-100 text-xs uppercase tracking-wide text-primary-800/50">
-                  <th className="px-4 py-3 font-semibold">Thumbnail</th>
-                  <th className="px-4 py-3 font-semibold">Campaign</th>
-                  <th className="px-4 py-3 font-semibold">Kode Unik</th>
-                  <th className="px-4 py-3 font-semibold">Progress</th>
-                  <th className="px-4 py-3 font-semibold">Status</th>
-                  <th className="px-4 py-3 font-semibold">Pinned</th>
-                  <th className="px-4 py-3 text-right font-semibold">Aksi</th>
+                <tr className="border-b border-primary-100 bg-primary-50/60 text-[11px] font-semibold uppercase tracking-wider text-primary-700/70">
+                  <th className="px-4 py-3.5 font-semibold">Thumbnail</th>
+                  <th className="px-4 py-3.5 font-semibold">Campaign</th>
+                  <th className="px-4 py-3.5 font-semibold">Kode Unik</th>
+                  <th className="px-4 py-3.5 font-semibold">Progress</th>
+                  <th className="px-4 py-3.5 font-semibold">Donatur</th>
+                  <th className="px-4 py-3.5 font-semibold">Status</th>
+                  <th className="px-4 py-3.5 font-semibold">Pinned</th>
+                  <th className="px-4 py-3.5 text-right font-semibold">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-primary-50">
                 {paged.map((item) => {
                   const percent = item.target ? (item.collected / item.target) * 100 : 0;
                   return (
-                    <tr key={item.id}>
-                      <td className="px-4 py-3">
+                    <tr key={item.id} className="transition-colors hover:bg-primary-50/40">
+                      <td className="px-4 py-3.5">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={item.imageUrl} alt="" className="h-12 w-16 rounded-lg object-cover" />
+                        <img src={item.imageUrl} alt="" className="h-12 w-16 rounded-xl border border-primary-100/80 object-cover" />
                       </td>
-                      <td className="max-w-xs px-4 py-3">
+                      <td className="max-w-xs px-4 py-3.5">
                         <Link href={`/admin/donasi/${item.id}`} className="truncate font-medium text-primary-900 hover:underline">
                           {item.title}
                         </Link>
                         <p className="truncate text-xs text-primary-800/55">{item.kategoriLabel} &middot; {item.lokasi}</p>
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs text-primary-800/60">{item.kodeUnik}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3.5 font-mono text-xs text-primary-800/60">{item.kodeUnik}</td>
+                      <td className="px-4 py-3.5">
                         <div className="w-40">
                           {item.target ? (
                             <>
@@ -153,7 +195,16 @@ export default function AdminDonasiPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3.5">
+                        <Link
+                          href={`/admin/donasi/${item.id}`}
+                          className="font-semibold text-primary-900 hover:underline"
+                        >
+                          {formatNumber(item.donaturCount)}
+                        </Link>
+                        <span className="block text-xs text-primary-800/50">orang</span>
+                      </td>
+                      <td className="px-4 py-3.5">
                         <button
                           type="button"
                           onClick={() => cycleStatus(item.id)}
@@ -162,10 +213,10 @@ export default function AdminDonasiPage() {
                           {item.status}
                         </button>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3.5">
                         <Toggle checked={item.isPinned} onChange={() => togglePinned(item.id)} label="Pinned" />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3.5">
                         <RowActions
                           onEdit={() => router.push(`/admin/donasi/${item.id}/edit`)}
                           onDelete={() => setDeleteTarget({ id: item.id, title: item.title })}
@@ -181,40 +232,56 @@ export default function AdminDonasiPage() {
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          {paged.map((item) => {
-            const percent = item.target ? (item.collected / item.target) * 100 : 0;
-            return (
-              <div key={item.id} className="flex gap-4 rounded-2xl border border-primary-100 bg-white p-4">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={item.imageUrl} alt="" className="h-20 w-28 shrink-0 rounded-xl object-cover" />
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Link href={`/admin/donasi/${item.id}`} className="font-bold text-primary-900 hover:underline">
-                      {item.title}
-                    </Link>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {paged.map((item) => {
+              const percent = item.target ? (item.collected / item.target) * 100 : 0;
+              return (
+                <AdminGridCard
+                  key={item.id}
+                  href={`/admin/donasi/${item.id}`}
+                  imageUrl={item.imageUrl}
+                  title={item.title}
+                  badges={
                     <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold capitalize ${STATUS_STYLES[item.status]}`}>
                       {item.status}
                     </span>
-                  </div>
-                  <p className="mt-1 line-clamp-2 text-sm text-primary-800/65">{item.description}</p>
-                  <div className="mt-2 max-w-xs">
-                    {item.target ? (
-                      <ProgressBar percent={percent} />
-                    ) : (
-                      <p className="text-xs font-semibold text-primary-800">{formatRupiah(item.collected)}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex shrink-0 flex-col items-end gap-2">
-                  <Toggle checked={item.isPinned} onChange={() => togglePinned(item.id)} label="Pinned" />
-                  <RowActions
-                    onEdit={() => router.push(`/admin/donasi/${item.id}/edit`)}
-                    onDelete={() => setDeleteTarget({ id: item.id, title: item.title })}
-                  />
-                </div>
-              </div>
-            );
-          })}
+                  }
+                  description={item.description}
+                  meta={
+                    <div className="max-w-full">
+                      {item.target ? (
+                        <>
+                          <ProgressBar percent={percent} />
+                          <p className="mt-1 truncate">
+                            {formatRupiah(item.collected)} / {formatRupiah(item.target)}
+                          </p>
+                        </>
+                      ) : (
+                        <span className="block truncate font-semibold text-primary-800">{formatRupiah(item.collected)}</span>
+                      )}
+                      <p className="mt-1 truncate font-semibold text-primary-700">{formatNumber(item.donaturCount)} orang donasi</p>
+                    </div>
+                  }
+                  footer={
+                    <>
+                      <Toggle checked={item.isPinned} onChange={() => togglePinned(item.id)} label="Pinned" />
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          stopCardClick(e);
+                          router.push(`/admin/donasi/${item.id}/edit`);
+                        }}
+                        className="text-xs font-semibold text-primary-700 hover:underline"
+                      >
+                        Edit
+                      </button>
+                    </>
+                  }
+                  onDelete={() => setDeleteTarget({ id: item.id, title: item.title })}
+                />
+              );
+            })}
+          </div>
           <Pagination page={page} totalPages={totalPages} onChange={setPage} />
         </div>
       )}

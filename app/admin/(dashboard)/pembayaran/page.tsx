@@ -47,23 +47,23 @@ export default function AdminPembayaranPage() {
       <div className="overflow-x-auto rounded-2xl border border-primary-100 bg-white">
         <table className="w-full min-w-[680px] text-left text-sm">
           <thead>
-            <tr className="border-b border-primary-100 text-xs uppercase tracking-wide text-primary-800/50">
-              <th className="px-4 py-3 font-semibold">Metode Pembayaran</th>
-              <th className="px-4 py-3 font-semibold">Tipe Biaya</th>
-              <th className="px-4 py-3 font-semibold">Nilai</th>
-              <th className="px-4 py-3 text-right font-semibold">Aksi</th>
+            <tr className="border-b border-primary-100 bg-primary-50/60 text-[11px] font-semibold uppercase tracking-wider text-primary-700/70">
+              <th className="px-4 py-3.5 font-semibold">Metode Pembayaran</th>
+              <th className="px-4 py-3.5 font-semibold">Tipe Biaya</th>
+              <th className="px-4 py-3.5 font-semibold">Nilai</th>
+              <th className="px-4 py-3.5 text-right font-semibold">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-primary-50">
             {methods.map((m) => {
               const tipe = tipeOf(m);
               return (
-                <tr key={m.id}>
-                  <td className="px-4 py-3">
+                <tr key={m.id} className="transition-colors hover:bg-primary-50/40">
+                  <td className="px-4 py-3.5">
                     <p className="font-medium text-primary-900">{m.label}</p>
                     <p className="text-xs text-primary-800/55">{m.group}</p>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3.5">
                     <select
                       value={tipe}
                       onChange={(e) => updateTipe(m.id, e.target.value as TipeBiaya)}
@@ -73,7 +73,7 @@ export default function AdminPembayaranPage() {
                       <option value="persen">Persentase (%)</option>
                     </select>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3.5">
                     <div className="flex items-center gap-1.5">
                       {tipe === "flat" ? (
                         <>
@@ -101,7 +101,7 @@ export default function AdminPembayaranPage() {
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-3.5 text-right">
                     <button
                       type="button"
                       onClick={() => handleSave(m.label)}

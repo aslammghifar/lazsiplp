@@ -6,7 +6,7 @@ export default function AdminProgramBaruPage() {
     <div>
       <BackLink href="/admin/program">Semua Program</BackLink>
       <h2 className="mb-6 mt-4 text-xl font-extrabold tracking-tight text-primary-900">Tambah Program Baru</h2>
-      <ProgramForm />
+      <ProgramForm lockedKategori="umum" backHref="/admin/program" />
     </div>
   );
 }

@@ -2,10 +2,10 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { campaigns } from "@/lib/dummy-data";
 import { getTransactionsByCampaign } from "@/lib/admin-dummy-data";
-import { formatRupiah, formatNumber, formatDate } from "@/lib/format";
+import { formatRupiah, formatNumber } from "@/lib/format";
 import { BackLink } from "@/components/ui/BackLink";
 import { ProgressBar } from "@/components/ui/ProgressBar";
-import { StatusBadge } from "@/components/admin/StatusBadge";
+import { CampaignTransactionsPanel } from "@/components/admin/CampaignTransactionsPanel";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -54,47 +54,7 @@ export default async function AdminDonasiDetailPage({ params }: Props) {
         </div>
       </div>
 
-      <div className="mt-8 overflow-hidden rounded-2xl border border-primary-100 bg-white">
-        <div className="flex items-center justify-between border-b border-primary-100 p-5">
-          <h3 className="text-base font-bold text-primary-900">Transaksi Masuk ke Campaign Ini</h3>
-          <Link
-            href={`/admin/transaksi?campaign=${encodeURIComponent(item.title)}`}
-            className="text-sm font-semibold text-primary-700 hover:text-primary-900"
-          >
-            Lihat di Riwayat Transaksi &rarr;
-          </Link>
-        </div>
-        {transactions.length === 0 ? (
-          <p className="p-6 text-center text-sm text-primary-800/50">Belum ada transaksi masuk untuk campaign ini.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px] text-left text-sm">
-              <thead>
-                <tr className="border-b border-primary-100 text-xs uppercase tracking-wide text-primary-800/50">
-                  <th className="px-4 py-3 font-semibold">Tanggal</th>
-                  <th className="px-4 py-3 font-semibold">Donatur</th>
-                  <th className="px-4 py-3 font-semibold">Nominal</th>
-                  <th className="px-4 py-3 font-semibold">Metode</th>
-                  <th className="px-4 py-3 font-semibold">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-primary-50">
-                {transactions.map((t) => (
-                  <tr key={t.id}>
-                    <td className="px-4 py-3 text-primary-800/60">{formatDate(t.tanggal)}</td>
-                    <td className="px-4 py-3 font-medium text-primary-900">{t.donaturNama}</td>
-                    <td className="px-4 py-3 font-semibold text-primary-900">{formatRupiah(t.nominal)}</td>
-                    <td className="px-4 py-3 text-primary-800/70">{t.metode}</td>
-                    <td className="px-4 py-3">
-                      <StatusBadge status={t.status} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      <CampaignTransactionsPanel campaignTitle={item.title} transactions={transactions} />
     </div>
   );
 }

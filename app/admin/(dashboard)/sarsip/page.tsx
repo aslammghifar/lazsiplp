@@ -20,10 +20,10 @@ type StatusFilter = "semua" | "published" | "draft";
 const MAX_PINNED = 3;
 const PAGE_SIZE = 8;
 
-export default function AdminBeritaPage() {
+export default function AdminSarsipPage() {
   const { showToast } = useToast();
   const router = useRouter();
-  const [items, setItems] = useState(() => initialNewsList.filter((n) => n.kategori === "umum"));
+  const [items, setItems] = useState(() => initialNewsList.filter((n) => n.kategori === "sarsip"));
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("semua");
   const [dateFrom, setDateFrom] = useState("");
@@ -39,7 +39,7 @@ export default function AdminBeritaPage() {
       if (!target) return prev;
       const pinnedCount = prev.filter((n) => n.isPinned).length;
       if (!target.isPinned && pinnedCount >= MAX_PINNED) {
-        showToast(`Maksimal ${MAX_PINNED} berita pinned. Lepas salah satu pin dulu.`, "error");
+        showToast(`Maksimal ${MAX_PINNED} update SARSIP pinned. Lepas salah satu pin dulu.`, "error");
         return prev;
       }
       return prev.map((n) => (n.id === id ? { ...n, isPinned: !n.isPinned } : n));
@@ -55,7 +55,7 @@ export default function AdminBeritaPage() {
   function confirmDelete() {
     if (!deleteTarget) return;
     setItems((prev) => prev.filter((n) => n.id !== deleteTarget.id));
-    showToast(`Berita "${deleteTarget.title}" dihapus (belum tersimpan permanen).`, "error");
+    showToast(`Update SARSIP "${deleteTarget.title}" dihapus (belum tersimpan permanen).`, "error");
     setDeleteTarget(null);
   }
 
@@ -79,20 +79,20 @@ export default function AdminBeritaPage() {
   return (
     <div>
       <AdminPageHeader
-        title="Berita"
-        description={`${items.length} artikel Berita & Kabar — ${pinnedCount}/${MAX_PINNED} sedang pinned. (SARSIP dikelola di modul terpisah.)`}
+        title="SARSIP"
+        description={`${items.length} update SARSIP — ${pinnedCount}/${MAX_PINNED} sedang pinned. Dikelola terpisah dari Berita & Program.`}
         action={
           <Link
-            href="/admin/berita/baru"
+            href="/admin/sarsip/baru"
             className="inline-flex items-center gap-2 rounded-full bg-primary-900 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-800"
           >
-            + Tambah Berita Baru
+            + Tambah Update SARSIP
           </Link>
         }
       />
 
       <div className="mb-4 flex flex-wrap items-center gap-3">
-        <SearchInput value={search} onChange={(v) => { setSearch(v); setPage(1); }} placeholder="Cari judul berita..." />
+        <SearchInput value={search} onChange={(v) => { setSearch(v); setPage(1); }} placeholder="Cari judul..." />
         <div className="flex gap-2">
           {(["semua", "published", "draft"] as StatusFilter[]).map((s) => (
             <button
@@ -132,11 +132,11 @@ export default function AdminBeritaPage() {
           <ViewModeToggle mode={view} onChange={setView} />
         </div>
       </div>
-      <p className="mb-4 text-xs text-primary-800/45">Menampilkan {filtered.length} dari {items.length} berita.</p>
+      <p className="mb-4 text-xs text-primary-800/45">Menampilkan {filtered.length} dari {items.length} update SARSIP.</p>
 
       {paged.length === 0 ? (
         <div className="rounded-2xl border border-primary-100 bg-white">
-          <EmptyState message="Belum ada berita. Klik tombol di atas untuk menambah." />
+          <EmptyState message="Belum ada update SARSIP. Klik tombol di atas untuk menambah." />
         </div>
       ) : view === "list" ? (
         <div className="overflow-hidden rounded-2xl border border-primary-100 bg-white">
@@ -177,7 +177,7 @@ export default function AdminBeritaPage() {
                     </td>
                     <td className="px-4 py-3.5">
                       <RowActions
-                        onEdit={() => router.push(`/admin/berita/${item.id}`)}
+                        onEdit={() => router.push(`/admin/sarsip/${item.id}`)}
                         onDelete={() => setDeleteTarget({ id: item.id, title: item.title })}
                       />
                     </td>
@@ -194,7 +194,7 @@ export default function AdminBeritaPage() {
             {paged.map((item) => (
               <AdminGridCard
                 key={item.id}
-                href={`/admin/berita/${item.id}`}
+                href={`/admin/sarsip/${item.id}`}
                 imageUrl={item.imageUrl}
                 title={item.title}
                 badges={
@@ -224,7 +224,7 @@ export default function AdminBeritaPage() {
 
       <ConfirmModal
         open={!!deleteTarget}
-        title="Hapus Berita?"
+        title="Hapus Update SARSIP?"
         description={`Apakah Anda yakin ingin menghapus "${deleteTarget?.title}"? Tindakan ini tidak bisa dibatalkan.`}
         onConfirm={confirmDelete}
         onCancel={() => setDeleteTarget(null)}

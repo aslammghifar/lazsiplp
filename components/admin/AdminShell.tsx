@@ -18,8 +18,10 @@ const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: "M4 13h6V4H4v9zM4 20h6v-5H4v5zM14 20h6V11h-6v9zM14 4v5h6V4h-6z" },
   { href: "/admin/konten-umum", label: "Konten Umum", icon: "M4 12l8-8 8 8M6 10v10h5v-6h2v6h5V10" },
   { href: "/admin/berita", label: "Berita", icon: "M4 4h16v4H4zM4 10h16v10H4zM8 14h8M8 17h5" },
+  { href: "/admin/sarsip", label: "SARSIP", icon: "M12 2 3 6v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V6l-9-4z" },
   { href: "/admin/donasi", label: "Donasi & Campaign", icon: "M12 3v18M7 7l5-4 5 4M6 12h12M6 17h12" },
-  { href: "/admin/program", label: "Program", icon: "M12 3l8 4-8 4-8-4 8-4zM4 11v6l8 4 8-4v-6" },
+  { href: "/admin/program", label: "Program Pemberdayaan", icon: "M12 3l8 4-8 4-8-4 8-4zM4 11v6l8 4 8-4v-6" },
+  { href: "/admin/pendidikan", label: "Divisi Pendidikan", icon: "M12 3 2 8l10 5 10-5-10-5zM6 13.5v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4" },
   { href: "/admin/kegiatan", label: "Kegiatan", icon: "M8 3v4M16 3v4M4 9h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z" },
   { href: "/admin/penerima-manfaat", label: "Penerima Manfaat", icon: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20c0-3.3 3.6-6 8-6s8 2.7 8 6" },
   { href: "/admin/donatur", label: "Donatur", icon: "M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM2 20c0-3 2.7-5.5 7-5.5s7 2.5 7 5.5M14.5 14.8c3.5.3 5.5 2.6 5.5 5.2" },
@@ -55,7 +57,7 @@ function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () 
 
 function SidebarBrand() {
   return (
-    <div className="flex items-center gap-2.5 border-b border-primary-100 px-6 py-5">
+    <div className="flex h-20 shrink-0 items-center gap-2.5 border-b border-primary-100 px-6">
       <LazsipLogo />
       <span className="text-base font-extrabold tracking-tight text-primary-900">LAZSIP Admin</span>
     </div>
@@ -126,7 +128,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center gap-3 border-b border-primary-100 bg-white px-4 py-4 sm:px-6 lg:px-8">
+        <header className="flex h-20 shrink-0 items-center gap-3 border-b border-primary-100 bg-white px-4 sm:px-6 lg:px-8">
           <button
             type="button"
             aria-label="Buka menu"

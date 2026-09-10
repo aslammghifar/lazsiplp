@@ -62,22 +62,22 @@ export default async function AdminDonorDetailPage({ params }: Props) {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[680px] text-left text-sm">
             <thead>
-              <tr className="border-b border-primary-100 text-xs uppercase tracking-wide text-primary-800/50">
-                <th className="px-4 py-3 font-semibold">Tanggal</th>
-                <th className="px-4 py-3 font-semibold">Jenis</th>
-                <th className="px-4 py-3 font-semibold">Campaign / Jenis Zakat</th>
-                <th className="px-4 py-3 font-semibold">Nominal</th>
-                <th className="px-4 py-3 font-semibold">Status</th>
+              <tr className="border-b border-primary-100 bg-primary-50/60 text-[11px] font-semibold uppercase tracking-wider text-primary-700/70">
+                <th className="px-4 py-3.5 font-semibold">Tanggal</th>
+                <th className="px-4 py-3.5 font-semibold">Jenis</th>
+                <th className="px-4 py-3.5 font-semibold">Campaign / Jenis Zakat</th>
+                <th className="px-4 py-3.5 font-semibold">Nominal</th>
+                <th className="px-4 py-3.5 font-semibold">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-primary-50">
               {transactions.map((t) => (
-                <tr key={t.id}>
-                  <td className="px-4 py-3 text-primary-800/60">{formatDate(t.tanggal)}</td>
-                  <td className="px-4 py-3 capitalize text-primary-800/70">{t.jenis}</td>
-                  <td className="max-w-[220px] truncate px-4 py-3 text-primary-800/70">{t.labelJenis}</td>
-                  <td className="px-4 py-3 font-semibold text-primary-900">{formatRupiah(t.nominal)}</td>
-                  <td className="px-4 py-3">
+                <tr key={t.id} className="transition-colors hover:bg-primary-50/40">
+                  <td className="px-4 py-3.5 text-primary-800/60">{formatDate(t.tanggal)}</td>
+                  <td className="px-4 py-3.5 capitalize text-primary-800/70">{t.jenis}</td>
+                  <td className="max-w-[220px] truncate px-4 py-3.5 text-primary-800/70">{t.labelJenis}</td>
+                  <td className="px-4 py-3.5 font-semibold text-primary-900">{formatRupiah(t.nominal)}</td>
+                  <td className="px-4 py-3.5">
                     <StatusBadge status={t.status} />
                   </td>
                 </tr>

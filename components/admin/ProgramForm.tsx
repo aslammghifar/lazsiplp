@@ -7,14 +7,23 @@ import { useToast } from "@/components/ui/Toast";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { Toggle } from "@/components/admin/Toggle";
 
-export function ProgramForm({ initial }: { initial?: Program }) {
+export function ProgramForm({
+  initial,
+  lockedKategori,
+  backHref = "/admin/program",
+}: {
+  initial?: Program;
+  /** Kalau diisi, dropdown kategori disembunyikan & kategori dikunci ke nilai ini (dipakai modul Program vs Divisi Pendidikan yang sekarang CRUD-nya terpisah). */
+  lockedKategori?: KategoriProgram;
+  backHref?: string;
+}) {
   const router = useRouter();
   const { showToast } = useToast();
   const isEdit = !!initial;
 
   const [title, setTitle] = useState(initial?.title ?? "");
   const [description, setDescription] = useState(initial?.description ?? "");
-  const [kategori, setKategori] = useState<KategoriProgram>(initial?.kategori ?? "umum");
+  const [kategori, setKategori] = useState<KategoriProgram>(initial?.kategori ?? lockedKategori ?? "umum");
   const [tipeKonten, setTipeKonten] = useState<"pendaftaran" | "berita">(initial?.tipeKonten ?? "pendaftaran");
   const [syaratText, setSyaratText] = useState(
     initial && initial.tipeKonten === "pendaftaran" ? initial.syarat.join("\n") : ""
@@ -42,7 +51,7 @@ export function ProgramForm({ initial }: { initial?: Program }) {
     setSubmitting(true);
     setTimeout(() => {
       showToast(`Program "${title}" ${isEdit ? "diperbarui" : "ditambahkan"} (simulasi — belum tersimpan permanen).`);
-      router.push("/admin/program");
+      router.push(backHref);
     }, 500);
   }
 
@@ -89,17 +98,26 @@ export function ProgramForm({ initial }: { initial?: Program }) {
 
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-4 rounded-3xl border border-primary-100 bg-white p-6">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-primary-900">Kategori</label>
-              <select
-                value={kategori}
-                onChange={(e) => setKategori(e.target.value as KategoriProgram)}
-                className="rounded-full border border-primary-200 bg-white px-4 py-2.5 text-sm text-primary-900 outline-none focus:ring-2 focus:ring-primary-400"
-              >
-                <option value="umum">Program Pemberdayaan (Umum)</option>
-                <option value="pendidikan">Divisi Pendidikan</option>
-              </select>
-            </div>
+            {lockedKategori ? (
+              <div className="flex flex-col gap-1.5">
+                <span className="text-sm font-medium text-primary-900">Kategori</span>
+                <span className="rounded-full border border-primary-100 bg-primary-50/60 px-4 py-2.5 text-sm text-primary-800/70">
+                  {lockedKategori === "umum" ? "Program Pemberdayaan (Umum)" : "Divisi Pendidikan"}
+                </span>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-primary-900">Kategori</label>
+                <select
+                  value={kategori}
+                  onChange={(e) => setKategori(e.target.value as KategoriProgram)}
+                  className="rounded-full border border-primary-200 bg-white px-4 py-2.5 text-sm text-primary-900 outline-none focus:ring-2 focus:ring-primary-400"
+                >
+                  <option value="umum">Program Pemberdayaan (Umum)</option>
+                  <option value="pendidikan">Divisi Pendidikan</option>
+                </select>
+              </div>
+            )}
 
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-primary-900">Tipe Konten</label>

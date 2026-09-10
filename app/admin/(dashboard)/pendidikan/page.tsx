@@ -18,10 +18,10 @@ import { AdminGridCard, stopCardClick } from "@/components/admin/AdminGridCard";
 
 const PAGE_SIZE = 8;
 
-export default function AdminProgramPage() {
+export default function AdminPendidikanPage() {
   const { showToast } = useToast();
   const router = useRouter();
-  const [items, setItems] = useState(() => initialPrograms.filter((p) => p.kategori === "umum"));
+  const [items, setItems] = useState(() => initialPrograms.filter((p) => p.kategori === "pendidikan"));
   const [search, setSearch] = useState("");
   const [tipeFilter, setTipeFilter] = useState<"semua" | "pendaftaran" | "berita">("semua");
   const [pendaftaranFilter, setPendaftaranFilter] = useState<"semua" | "dibuka" | "ditutup">("semua");
@@ -65,11 +65,11 @@ export default function AdminProgramPage() {
   return (
     <div>
       <AdminPageHeader
-        title="Program Pemberdayaan"
-        description={`${items.length} program — kategori Umum saja. Divisi Pendidikan & SARSIP dikelola di modul masing-masing.`}
+        title="Divisi Pendidikan"
+        description={`${items.length} program — dikelola terpisah dari Program Pemberdayaan & SARSIP.`}
         action={
           <Link
-            href="/admin/program/baru"
+            href="/admin/pendidikan/baru"
             className="inline-flex items-center gap-2 rounded-full bg-primary-900 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-800"
           >
             + Tambah Program
@@ -142,7 +142,7 @@ export default function AdminProgramPage() {
                       <td className="max-w-xs px-4 py-3.5">
                         <p className="truncate font-medium text-primary-900">{item.title}</p>
                         {item.tipeKonten === "pendaftaran" && applicantCount > 0 && (
-                          <Link href={`/admin/program/${item.id}/pendaftar`} className="text-xs font-semibold text-primary-700 hover:underline">
+                          <Link href={`/admin/pendidikan/${item.id}/pendaftar`} className="text-xs font-semibold text-primary-700 hover:underline">
                             {applicantCount} pendaftar &rarr;
                           </Link>
                         )}
@@ -168,7 +168,7 @@ export default function AdminProgramPage() {
                       </td>
                       <td className="px-4 py-3.5">
                         <RowActions
-                          onEdit={() => router.push(`/admin/program/${item.id}`)}
+                          onEdit={() => router.push(`/admin/pendidikan/${item.id}`)}
                           onDelete={() => setDeleteTarget({ id: item.id, title: item.title })}
                         />
                       </td>
@@ -188,7 +188,7 @@ export default function AdminProgramPage() {
               return (
                 <AdminGridCard
                   key={item.id}
-                  href={`/admin/program/${item.id}`}
+                  href={`/admin/pendidikan/${item.id}`}
                   imageUrl={item.imageUrl}
                   title={item.title}
                   badges={
@@ -204,7 +204,7 @@ export default function AdminProgramPage() {
                   meta={
                     item.tipeKonten === "pendaftaran" && applicantCount > 0 ? (
                       <Link
-                        href={`/admin/program/${item.id}/pendaftar`}
+                        href={`/admin/pendidikan/${item.id}/pendaftar`}
                         onClick={stopCardClick}
                         className="block truncate font-semibold text-primary-700 hover:underline"
                       >

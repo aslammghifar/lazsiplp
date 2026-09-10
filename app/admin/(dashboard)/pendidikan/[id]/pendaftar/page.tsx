@@ -9,16 +9,16 @@ type Props = {
   params: Promise<{ id: string }>;
 };
 
-export default async function AdminProgramPendaftarPage({ params }: Props) {
+export default async function AdminPendidikanPendaftarPage({ params }: Props) {
   const { id } = await params;
-  const item = programs.find((p) => p.id === id && p.kategori === "umum");
+  const item = programs.find((p) => p.id === id && p.kategori === "pendidikan");
   if (!item) notFound();
 
   const applicants = getApplicantsByProgram(id);
 
   return (
     <div>
-      <BackLink href={`/admin/program/${id}`}>Kembali ke Program</BackLink>
+      <BackLink href={`/admin/pendidikan/${id}`}>Kembali ke Program</BackLink>
       <h2 className="mb-1 mt-4 text-xl font-extrabold tracking-tight text-primary-900">
         Daftar Pendaftar — {item.title}
       </h2>

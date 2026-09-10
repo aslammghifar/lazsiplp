@@ -3,7 +3,7 @@
 // `donations` + `zakat_payments` (digabung untuk tampilan "Kelola Transaksi"), `beneficiaries`
 // versi lengkap, dan `donors`.
 
-import { campaigns, publicBeneficiaries, type PublicBeneficiary } from "@/lib/dummy-data";
+import { publicBeneficiaries, type PublicBeneficiary } from "@/lib/dummy-data";
 
 export type TransactionStatus = "paid" | "pending" | "failed" | "expired";
 
@@ -56,16 +56,9 @@ function generateDanaMasukHarian(days = 30): { tanggal: string; nominal: number 
 
 export const danaMasukHarian = generateDanaMasukHarian(30);
 
-export const dashboardStats = {
-  donasiBulanIni: 38_450_000,
-  zakatBulanIni: 24_180_000,
-  donaturBaruBulanIni: 37,
-  campaignAktif: campaigns.length,
-};
-
-export function getCampaignPalingLaris(count = 5) {
-  return [...campaigns].sort((a, b) => b.donaturCount - a.donaturCount).slice(0, count);
-}
+// Anchor tanggal "hari ini" versi data dummy — dipakai filter periode dashboard supaya konsisten
+// dengan rentang tanggal adminTransactions/danaMasukHarian (bukan Date.now() asli).
+export const TODAY_ISO = "2026-09-09";
 
 export function getTransactionsByCampaign(campaignId: string): AdminTransaction[] {
   return adminTransactions.filter((t) => t.campaignId === campaignId);

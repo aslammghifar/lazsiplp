@@ -23,6 +23,8 @@ export default function AdminPenerimaManfaatPage() {
   const [items, setItems] = useState(initialBeneficiaries);
   const [search, setSearch] = useState("");
   const [tipe, setTipe] = useState<TipeFilter>("semua");
+  const [verifikatorFilter, setVerifikatorFilter] = useState("semua");
+  const [sortBy, setSortBy] = useState<"terbaru" | "nominalTerbesar">("terbaru");
   const [page, setPage] = useState(1);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; nama: string } | null>(null);
 
@@ -33,11 +35,15 @@ export default function AdminPenerimaManfaatPage() {
     setDeleteTarget(null);
   }
 
+  const verifikatorOptions = useMemo(() => Array.from(new Set(items.map((b) => b.namaVerifikator))).sort(), [items]);
+
   const filtered = useMemo(() => {
     let result = items.filter((b) => b.nama.toLowerCase().includes(search.toLowerCase()));
     if (tipe !== "semua") result = result.filter((b) => b.tipeBantuan === tipe);
+    if (verifikatorFilter !== "semua") result = result.filter((b) => b.namaVerifikator === verifikatorFilter);
+    if (sortBy === "nominalTerbesar") result = [...result].sort((a, b) => b.nominalDiterima - a.nominalDiterima);
     return result;
-  }, [items, search, tipe]);
+  }, [items, search, tipe, verifikatorFilter, sortBy]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -73,7 +79,24 @@ export default function AdminPenerimaManfaatPage() {
             </button>
           ))}
         </div>
+        <select
+          value={verifikatorFilter}
+          onChange={(e) => { setVerifikatorFilter(e.target.value); setPage(1); }}
+          className="rounded-full border border-primary-200 bg-white px-3.5 py-2 text-xs text-primary-800 outline-none focus:ring-2 focus:ring-primary-400"
+        >
+          <option value="semua">Semua Verifikator</option>
+          {verifikatorOptions.map((v) => <option key={v} value={v}>{v}</option>)}
+        </select>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as "terbaru" | "nominalTerbesar")}
+          className="ml-auto rounded-full border border-primary-200 bg-white px-3.5 py-2 text-xs text-primary-800 outline-none focus:ring-2 focus:ring-primary-400"
+        >
+          <option value="terbaru">Urutkan: Terbaru</option>
+          <option value="nominalTerbesar">Urutkan: Nominal terbesar</option>
+        </select>
       </div>
+      <p className="mb-4 text-xs text-primary-800/45">Menampilkan {filtered.length} dari {items.length} penerima manfaat.</p>
 
       <div className="overflow-hidden rounded-2xl border border-primary-100 bg-white">
         {paged.length === 0 ? (
@@ -82,34 +105,34 @@ export default function AdminPenerimaManfaatPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] text-left text-sm">
               <thead>
-                <tr className="border-b border-primary-100 text-xs uppercase tracking-wide text-primary-800/50">
-                  <th className="px-4 py-3 font-semibold">Foto</th>
-                  <th className="px-4 py-3 font-semibold">Nama</th>
-                  <th className="px-4 py-3 font-semibold">Tipe Bantuan</th>
-                  <th className="px-4 py-3 font-semibold">Nominal Diterima</th>
-                  <th className="px-4 py-3 font-semibold">Verifikator</th>
-                  <th className="px-4 py-3 text-right font-semibold">Aksi</th>
+                <tr className="border-b border-primary-100 bg-primary-50/60 text-[11px] font-semibold uppercase tracking-wider text-primary-700/70">
+                  <th className="px-4 py-3.5 font-semibold">Foto</th>
+                  <th className="px-4 py-3.5 font-semibold">Nama</th>
+                  <th className="px-4 py-3.5 font-semibold">Tipe Bantuan</th>
+                  <th className="px-4 py-3.5 font-semibold">Nominal Diterima</th>
+                  <th className="px-4 py-3.5 font-semibold">Verifikator</th>
+                  <th className="px-4 py-3.5 text-right font-semibold">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-primary-50">
                 {paged.map((item) => (
-                  <tr key={item.id}>
-                    <td className="px-4 py-3">
+                  <tr key={item.id} className="transition-colors hover:bg-primary-50/40">
+                    <td className="px-4 py-3.5">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={item.imageUrl} alt="" className="h-11 w-11 rounded-full object-cover" />
+                      <img src={item.imageUrl} alt="" className="h-11 w-11 rounded-full border border-primary-100/80 object-cover" />
                     </td>
-                    <td className="px-4 py-3 font-medium text-primary-900">{item.nama}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3.5 font-medium text-primary-900">{item.nama}</td>
+                    <td className="px-4 py-3.5">
                       <span className="inline-flex items-center rounded-full bg-primary-50 px-3 py-1 text-xs font-bold text-primary-700">
                         {TIPE_BANTUAN_LABEL[item.tipeBantuan]}
                       </span>
                     </td>
-                    <td className="px-4 py-3 font-semibold text-primary-900">{formatRupiah(item.nominalDiterima)}</td>
-                    <td className="px-4 py-3 text-primary-800/70">
+                    <td className="px-4 py-3.5 font-semibold text-primary-900">{formatRupiah(item.nominalDiterima)}</td>
+                    <td className="px-4 py-3.5 text-primary-800/70">
                       {item.namaVerifikator}
                       <span className="block text-xs text-primary-800/50">{item.daerahCakupanVerifikator}</span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3.5">
                       <RowActions
                         onEdit={() => router.push(`/admin/penerima-manfaat/${item.id}`)}
                         onDelete={() => setDeleteTarget({ id: item.id, nama: item.nama })}

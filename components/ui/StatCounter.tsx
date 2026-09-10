@@ -22,16 +22,16 @@ export function StatCounter({
   className?: string;
 }) {
   return (
-    <div className={`rounded-3xl bg-white p-6 ${className}`}>
+    <div className={`min-w-0 rounded-3xl bg-white p-4 sm:p-6 ${className}`}>
       <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-5 w-5">
           <path strokeLinecap="round" strokeLinejoin="round" d={ICONS[icon]} />
         </svg>
       </span>
-      <p className="mt-4 text-2xl font-extrabold tracking-tight text-primary-900 sm:text-3xl">
+      <p className="mt-4 truncate text-xl font-extrabold leading-tight tracking-tight text-primary-900 sm:text-2xl lg:text-[1.65rem]" title={value}>
         {value}
       </p>
-      <p className="mt-1 text-sm text-primary-800/60">{label}</p>
+      <p className="mt-1 truncate text-sm text-primary-800/60">{label}</p>
     </div>
   );
 }

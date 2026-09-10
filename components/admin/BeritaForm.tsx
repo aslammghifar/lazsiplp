@@ -8,13 +8,22 @@ import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { Toggle } from "@/components/admin/Toggle";
 
-export function BeritaForm({ initial }: { initial?: NewsItem }) {
+export function BeritaForm({
+  initial,
+  lockedKategori,
+  backHref = "/admin/berita",
+}: {
+  initial?: NewsItem;
+  /** Kalau diisi, dropdown kategori disembunyikan & dikunci (dipakai modul SARSIP yang CRUD-nya terpisah dari Berita umum). */
+  lockedKategori?: "umum" | "sarsip";
+  backHref?: string;
+}) {
   const router = useRouter();
   const { showToast } = useToast();
   const isEdit = !!initial;
 
   const [title, setTitle] = useState(initial?.title ?? "");
-  const [kategori, setKategori] = useState<"umum" | "sarsip">(initial?.kategori ?? "umum");
+  const [kategori, setKategori] = useState<"umum" | "sarsip">(initial?.kategori ?? lockedKategori ?? "umum");
   const [publishedAt, setPublishedAt] = useState(initial?.publishedAt ?? new Date().toISOString().slice(0, 10));
   const [content, setContent] = useState(initial?.content.join("<br/><br/>") ?? "");
   const [status, setStatus] = useState<"published" | "draft">(initial?.status ?? "draft");
@@ -31,7 +40,7 @@ export function BeritaForm({ initial }: { initial?: NewsItem }) {
     setSubmitting(true);
     setTimeout(() => {
       showToast(`Berita "${title}" ${isEdit ? "diperbarui" : "ditambahkan"} (simulasi — belum tersimpan permanen).`);
-      router.push("/admin/berita");
+      router.push(backHref);
     }, 500);
   }
 
@@ -59,17 +68,26 @@ export function BeritaForm({ initial }: { initial?: NewsItem }) {
 
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-4 rounded-3xl border border-primary-100 bg-white p-6">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-primary-900">Kategori</label>
-              <select
-                value={kategori}
-                onChange={(e) => setKategori(e.target.value as "umum" | "sarsip")}
-                className="rounded-full border border-primary-200 bg-white px-4 py-2.5 text-sm text-primary-900 outline-none focus:ring-2 focus:ring-primary-400"
-              >
-                <option value="umum">Berita &amp; Kabar</option>
-                <option value="sarsip">SARSIP</option>
-              </select>
-            </div>
+            {lockedKategori ? (
+              <div className="flex flex-col gap-1.5">
+                <span className="text-sm font-medium text-primary-900">Kategori</span>
+                <span className="rounded-full border border-primary-100 bg-primary-50/60 px-4 py-2.5 text-sm text-primary-800/70">
+                  {lockedKategori === "umum" ? "Berita & Kabar" : "SARSIP"}
+                </span>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-primary-900">Kategori</label>
+                <select
+                  value={kategori}
+                  onChange={(e) => setKategori(e.target.value as "umum" | "sarsip")}
+                  className="rounded-full border border-primary-200 bg-white px-4 py-2.5 text-sm text-primary-900 outline-none focus:ring-2 focus:ring-primary-400"
+                >
+                  <option value="umum">Berita &amp; Kabar</option>
+                  <option value="sarsip">SARSIP</option>
+                </select>
+              </div>
+            )}
 
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-primary-900">Tanggal Publish</label>

@@ -1,14 +1,14 @@
 import { Hero } from "@/components/sections/Hero";
 import { MitraMarquee } from "@/components/sections/MitraMarquee";
-import { Tentang } from "@/components/sections/Tentang";
+import { PenyaluranBantuan } from "@/components/sections/PenyaluranBantuan";
 import { ZakatCalculator } from "@/components/sections/ZakatCalculator";
-import { Berita } from "@/components/sections/Berita";
 import { Donasi } from "@/components/sections/Donasi";
+import { Berita } from "@/components/sections/Berita";
+import { Kegiatan } from "@/components/sections/Kegiatan";
 import { ProgramSection } from "@/components/sections/ProgramSection";
 import { SarsipBerita } from "@/components/sections/SarsipBerita";
-import { Kegiatan } from "@/components/sections/Kegiatan";
-import { PenyaluranBantuan } from "@/components/sections/PenyaluranBantuan";
 import { Transparansi } from "@/components/sections/Transparansi";
+import { Tentang } from "@/components/sections/Tentang";
 import { getGoldPrice } from "@/lib/gold-price";
 
 export default async function Home() {
@@ -18,10 +18,11 @@ export default async function Home() {
     <>
       <Hero />
       <MitraMarquee />
-      <Tentang />
+      <PenyaluranBantuan />
       <ZakatCalculator goldPrice={goldPrice} />
-      <Berita />
       <Donasi />
+      <Berita />
+      <Kegiatan />
       <ProgramSection
         id="program"
         kategori="umum"
@@ -40,9 +41,8 @@ export default async function Home() {
         tinted
       />
       <SarsipBerita />
-      <Kegiatan />
-      <PenyaluranBantuan />
       <Transparansi />
+      <Tentang />
     </>
   );
 }

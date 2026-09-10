@@ -6,7 +6,7 @@ export default function AdminBeritaBaruPage() {
     <div>
       <BackLink href="/admin/berita">Semua Berita</BackLink>
       <h2 className="mb-6 mt-4 text-xl font-extrabold tracking-tight text-primary-900">Tambah Berita Baru</h2>
-      <BeritaForm />
+      <BeritaForm lockedKategori="umum" />
     </div>
   );
 }

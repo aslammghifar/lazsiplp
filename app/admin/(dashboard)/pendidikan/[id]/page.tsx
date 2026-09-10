@@ -9,28 +9,28 @@ type Props = {
   params: Promise<{ id: string }>;
 };
 
-export default async function AdminProgramEditPage({ params }: Props) {
+export default async function AdminPendidikanEditPage({ params }: Props) {
   const { id } = await params;
-  const item = programs.find((p) => p.id === id && p.kategori === "umum");
+  const item = programs.find((p) => p.id === id && p.kategori === "pendidikan");
   if (!item) notFound();
 
   const applicantCount = getApplicantsByProgram(id).length;
 
   return (
     <div>
-      <BackLink href="/admin/program">Semua Program</BackLink>
+      <BackLink href="/admin/pendidikan">Semua Program Pendidikan</BackLink>
       <div className="mb-6 mt-4 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-extrabold tracking-tight text-primary-900">Edit Program</h2>
+        <h2 className="text-xl font-extrabold tracking-tight text-primary-900">Edit Program Pendidikan</h2>
         {item.tipeKonten === "pendaftaran" && (
           <Link
-            href={`/admin/program/${id}/pendaftar`}
+            href={`/admin/pendidikan/${id}/pendaftar`}
             className="text-sm font-semibold text-primary-700 hover:text-primary-900"
           >
             Lihat {applicantCount} Pendaftar &rarr;
           </Link>
         )}
       </div>
-      <ProgramForm initial={item} lockedKategori="umum" backHref="/admin/program" />
+      <ProgramForm initial={item} lockedKategori="pendidikan" backHref="/admin/pendidikan" />
     </div>
   );
 }

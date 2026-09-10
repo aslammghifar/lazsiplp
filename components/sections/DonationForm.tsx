@@ -127,7 +127,7 @@ export function DonationForm({ campaign }: { campaign: Campaign }) {
           className="mt-0.5 h-4 w-4 rounded border-primary-300 text-primary-700 focus:ring-primary-400"
         />
         <span className="text-sm text-primary-800/80">
-          Saya bantu tanggung biaya admin ({formatRupiah(fee)}) supaya 100% nominal donasi tersalurkan.
+          Tambahkan {formatRupiah(fee)} untuk biaya transaksi agar donasi tersalurkan 100%.
         </span>
       </label>
 

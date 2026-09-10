@@ -1,7 +1,6 @@
 import { siteConfig } from "@/lib/site-config";
-import { transparencyStats } from "@/lib/dummy-data";
-import { formatRupiah, formatNumber } from "@/lib/format";
 import { HeroCtaButtons } from "@/components/sections/HeroCtaButtons";
+import { HeroCekStatus } from "@/components/sections/HeroCekStatus";
 
 export function Hero() {
   return (
@@ -31,37 +30,7 @@ export function Hero() {
 
         <div className="w-full max-w-sm justify-self-center lg:max-w-none lg:justify-self-end">
           <div className="rounded-3xl bg-white p-7 shadow-[0_25px_70px_-20px_rgba(0,0,0,0.45)] sm:p-8">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4.5 w-4.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18M7 7l5-4 5 4M6 12h12M6 17h12" />
-              </svg>
-            </span>
-            <p className="mt-4 text-xs font-bold uppercase tracking-wide text-secondary-600">
-              Transparansi Real-time
-            </p>
-            <p className="mt-3 text-3xl font-extrabold tracking-tight text-primary-900 sm:text-[2.25rem]">
-              {formatRupiah(transparencyStats.totalCollected)}
-            </p>
-            <p className="text-sm text-primary-800/55">total dana tersalurkan tahun ini</p>
-
-            <div className="mt-6 grid grid-cols-2 gap-4 border-t border-primary-100 pt-6">
-              <div>
-                <p className="text-xl font-extrabold text-primary-900">
-                  {formatNumber(transparencyStats.totalDonors)}
-                </p>
-                <p className="text-xs text-primary-800/50">Donatur &amp; muzakki</p>
-              </div>
-              <div>
-                <p className="text-xl font-extrabold text-primary-900">
-                  {formatNumber(transparencyStats.totalBeneficiaries)}
-                </p>
-                <p className="text-xs text-primary-800/50">Penerima manfaat</p>
-              </div>
-            </div>
-
-            <p className="mt-6 border-t border-primary-100 pt-4 text-xs text-primary-800/45">
-              Terdaftar &amp; diawasi <span className="font-medium text-primary-700">BAZNAS · Kemenag RI</span>
-            </p>
+            <HeroCekStatus />
           </div>
         </div>
       </div>
